@@ -1,5 +1,7 @@
 <div align="center">
 
+trying to learn Github while also learning and using linux
+
 ## ZaneyOS 🟰 Best ❄️ NixOS Configs
 
 ZaneyOS is a simple way of reproducing my configuration on any NixOS system.
