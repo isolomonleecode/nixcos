@@ -1,0 +1,84 @@
+{
+  description = "ZaneyOS";
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+    home-manager = {
+      url = "github:nix-community/home-manager/release-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    stylix.url = "github:danth/stylix/release-25.05";
+    nvf = {
+      url = "github:isolomonleecode/nvf?ref=replace-prettier-with-prettierd";
+    };
+  };
+
+  outputs = { self, nixpkgs, ... } @ inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+
+      # ✅ Kernel module and tools from local source
+      fanatec-kmod = pkgs.callPackage ./modules/fanatec-kmod.nix {
+        kernel = pkgs.linuxPackages_zen;
+      };
+
+      evdev-tools = import ./modules/evdev-tools.nix {
+        inherit pkgs;
+      };
+
+      commonSpecialArgs = {
+        inherit inputs pkgs system;
+        username = "ssjlox";
+        host = "capcorp9002";
+        profile = "amd";
+        inherit fanatec-kmod evdev-tools;
+      };
+
+      nixosConfigurationsBase = {
+        amd = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = commonSpecialArgs;
+          modules = [ ./profiles/amd ];
+        };
+
+        nvidia = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = commonSpecialArgs // { profile = "nvidia"; };
+          modules = [ ./profiles/nvidia ];
+        };
+
+        nvidia-laptop = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = commonSpecialArgs // { profile = "nvidia-laptop"; };
+          modules = [ ./profiles/nvidia-laptop ];
+        };
+
+        intel = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = commonSpecialArgs // { profile = "intel"; };
+          modules = [ ./profiles/intel ];
+        };
+
+        vm = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = commonSpecialArgs // { profile = "vm"; };
+          modules = [ ./profiles/vm ];
+        };
+      };
+    in {
+      nixosConfigurations = nixosConfigurationsBase // {
+        capcorp9002 = nixosConfigurationsBase.amd;
+      };
+
+      packages = {
+        x86_64-linux = {
+          evdev-tools = evdev-tools;
+        };
+      };
+    };
+}
+

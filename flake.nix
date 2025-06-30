@@ -5,17 +5,32 @@
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
+            #inputs.fanatec-egui-app.url = "path:modules/core/fanatec-egui-app";
     };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nvf.url = "github:notashelf/nvf";
+    nvf = {
+      url = "github:isolomonleecode/nvf?ref=replace-prettier-with-prettierd";
+    };
+
+    #  nvf.url = "github:notashelf/nvf";
     stylix.url = "github:danth/stylix/release-25.05";
   };
 
-  outputs = {nixpkgs, ...} @ inputs: let
+  outputs = {nixpkgs, self, ...} @ inputs: let
     system = "x86_64-linux";
-    host = "zaneyos-23-vm";
-    profile = "vm";
-    username = "dwilliams";
+    host = "capcorp9002";
+    profile = "amd";
+    username = "ssjlox";
+       
+    
+     pkgs = import nixpkgs {
+    inherit system;
+    config.allowUnfree = true;
+  };
+      fanatec-kmod = pkgs.callPackage ./modules/fanatec-kmod.nix {
+  kernel = pkgs.linuxPackages_zen.kernel;
+};
+    
   in {
     nixosConfigurations = {
       amd = nixpkgs.lib.nixosSystem {
@@ -25,6 +40,8 @@
           inherit username;
           inherit host;
           inherit profile;
+          fanatec-kmod = fanatec-kmod;
+          # evdev-tools = ... if needed
         };
         modules = [./profiles/amd];
       };

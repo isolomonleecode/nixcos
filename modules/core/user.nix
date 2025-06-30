@@ -7,13 +7,14 @@
   ...
 }: let
   inherit (import ../../hosts/${host}/variables.nix) gitUsername;
+  evdev-tools = inputs.self.packages.${pkgs.system}.evdev-tools;
 in {
   imports = [inputs.home-manager.nixosModules.home-manager];
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = false;
     backupFileExtension = "backup";
-    extraSpecialArgs = {inherit inputs username host profile;};
+    extraSpecialArgs = {inherit inputs username host profile evdev-tools;};
     users.${username} = {
       imports = [./../home];
       home = {

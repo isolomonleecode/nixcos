@@ -1,13 +1,14 @@
-{ pkgs, config, ... }:
+{ pkgs, config, fanatec-kmod, evdev-tools, ... }:
 
 {
   boot = {
     kernelPackages = pkgs.linuxPackages_zen;
-    kernelModules = [ "v4l2loopback" ];
-    extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+    kernelModules = [ "v4l2loopback" "hid-fanatecff" "ip_tables" "nr_tables" "nf_conntrack" ];
+    extraModulePackages = [ config.boot.kernelPackages.v4l2loopback fanatec-kmod ];
     kernel.sysctl = { "vm.max_map_count" = 2147483642; };
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
+    
     # Appimage Support
     binfmt.registrations.appimage = {
       wrapInterpreterInShell = false;
@@ -19,4 +20,5 @@
     };
     plymouth.enable = true;
   };
-}
+  }
+

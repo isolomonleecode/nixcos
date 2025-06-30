@@ -1,4 +1,4 @@
-{inputs, ...}: {
+{inputs, evdev-tools, ...}: {
   imports = [
     ./boot.nix
     ./flatpak.nix
