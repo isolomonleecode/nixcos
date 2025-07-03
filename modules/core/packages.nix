@@ -112,27 +112,6 @@
     winetricks
     wineWowPackages.stable
     softmaker-office
-
-    (pkgs.stdenv.mkDerivation {
-      pname = "redream";
-      version = "1.5.0";
-      src = pkgs.fetchurl {
-        url = "https://redream.io/download/redream-x86_64-linux.tar.gz";
-        sha256 = "4cM1WK7GzoYQ79Jbc34BAqC+OQGNJSkF+m+QH5W1eZQ=";
-      };
-      nativeBuildInputs = [ pkgs.autoPatchelfHook pkgs.glibc pkgs.zlib ];
-      dontUnpack = true;
-      installPhase = ''
-        mkdir -p $out/bin
-        cp $src $out/bin/redream
-        chmod +x $out/bin/redream
-      '';
-      meta = with pkgs.lib; {
-        description = "Dreamcast emulator";
-        homepage = "https://redream.io/";
-        license = licenses.unfree;
-        platforms = platforms.linux;
-      };
-    })
+    openrgb-with-all-plugins
   ];
 }
