@@ -113,5 +113,6 @@
     wineWowPackages.stable
     softmaker-office
     openrgb-with-all-plugins
+    prismlauncher
   ];
 }
